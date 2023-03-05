@@ -9,8 +9,8 @@ title: "Home"
 </style>
 
 <p align="center">
-   <img src="./static/clir_logo.png#only-light" width="30%">
-   <img src="./static/clir_logo_white.png#only-dark" width="30%">
+   <img src="./static/logo-light.svg#only-light" width="50%">
+   <img src="./static/logo-dark.svg#only-dark" width="50%">
 </p>
 
 <p align="center" class="subheading">
