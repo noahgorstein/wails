@@ -14,7 +14,7 @@ title: "Home"
 </p>
 
 <p align="center" class="subheading">
-   A Simple and Clear CLI library. Dependency free.<br/>
+   Build beautiful desktop applications using Go & Web Technologies.<br/>
 </p>
 
 <div class="badgelist">
