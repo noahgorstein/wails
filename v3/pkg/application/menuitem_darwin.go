@@ -332,7 +332,7 @@ import (
 type macosMenuItem struct {
 	menuItem *MenuItem
 
-	nsMenuItem unsafe.Pointer
+	nativeMenuItem unsafe.Pointer
 }
 
 func (m macosMenuItem) setTooltip(tooltip string) {

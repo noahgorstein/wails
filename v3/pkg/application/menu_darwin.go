@@ -60,7 +60,7 @@ import "unsafe"
 type macosMenu struct {
 	menu *Menu
 
-	nsMenu unsafe.Pointer
+	native unsafe.Pointer
 }
 
 func newMenuImpl(menu *Menu) *macosMenu {
@@ -71,12 +71,12 @@ func newMenuImpl(menu *Menu) *macosMenu {
 }
 
 func (m *macosMenu) update() {
-	if m.nsMenu == nil {
-		m.nsMenu = C.createNSMenu(C.CString(m.menu.label))
+	if m.native == nil {
+		m.native = C.createNSMenu(C.CString(m.menu.label))
 	} else {
-		C.clearMenu(m.nsMenu)
+		C.clearMenu(m.native)
 	}
-	m.processMenu(m.nsMenu, m.menu)
+	m.processMenu(m.native, m.menu)
 }
 
 func (m *macosMenu) processMenu(parent unsafe.Pointer, menu *Menu) {

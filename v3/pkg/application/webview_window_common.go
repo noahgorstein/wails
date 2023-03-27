@@ -24,7 +24,7 @@ func (w *commonWebviewWindow) openContextMenu(menu *Menu, data *ContextMenuData)
 	// Create the menu
 	thisMenu := newMenuImpl(menu)
 	thisMenu.update()
-	C.windowShowMenu(w.window, thisMenu.nsMenu, C.int(data.X), C.int(data.Y))
+	C.windowShowMenu(w.window, thisMenu.native, C.int(data.X), C.int(data.Y))
 }
 
 func (w *commonWebviewWindow) getZoom() float64 {
