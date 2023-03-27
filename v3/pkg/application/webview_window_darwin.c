@@ -9,8 +9,6 @@
 #import <AppKit/AppKit.h>
 #import "webview_drag.h"
 
-extern void registerListener(unsigned int event);
-
 // Create a new Window
 void* windowNew(unsigned int id, int width, int height, bool fraudulentWebsiteWarningEnabled, bool frameless, bool enableDragAndDrop) {
 

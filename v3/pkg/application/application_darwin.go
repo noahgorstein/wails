@@ -12,8 +12,6 @@ package application
 #include "webview_window.h"
 #include <stdlib.h>
 
-extern void registerListener(unsigned int event);
-
 #import <Cocoa/Cocoa.h>
 
 static AppDelegate *appDelegate = nil;

@@ -89,7 +89,8 @@ func (m *linuxApp) name() string {
 }
 
 func (m *linuxApp) getCurrentWindowID() uint {
-	return uint(C.getCurrentWindowID())
+	//	return uint(C.getCurrentWindowID())r
+	return uint(1) // FIXME
 }
 
 func (m *linuxApp) setApplicationMenu(menu *Menu) {

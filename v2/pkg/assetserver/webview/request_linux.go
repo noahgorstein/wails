@@ -9,7 +9,25 @@ import (
 	"unsafe"
 )
 
-// NewRequest creates as new WebViewRequest based on a pointer to an `id<WKURLSchemeTask>`
+/*
+#cgo linux pkg-config: gtk+-3.0 webkit2gtk-4.0
+
+#include <gtk/gtk.h>
+#include <webkit2/webkit2.h>
+#include "libsoup/soup.h"
+#include <stdio.h>
+#include <limits.h>
+#include <stdint.h>
+
+static const char * URLSchemeTaskRequestMethod(void *wkUrlSchemeTask) {
+
+
+}
+
+*/
+import "C"
+
+// NewRequest creates as new WebViewRequest based on a pointer to an `WebKitURISchemeRequest`
 //
 // Please make sure to call Release() when finished using the request.
 func NewRequest(wkURLSchemeTask unsafe.Pointer) Request {
@@ -38,35 +56,37 @@ func (r *request) Release() error {
 }
 
 func (r *request) URL() (string, error) {
-	return "", nil
-	//	return C.GoString(C.URLSchemeTaskRequestURL(r.task)), nil
+	req := (*C.WebKitURISchemeRequest)(r.task)
+	uri := C.webkit_uri_scheme_request_get_uri(req)
+	return C.GoString(uri), nil
 }
 
 func (r *request) Method() (string, error) {
-	//	return C.GoString(C.URLSchemeTaskRequestMethod(r.task)), nil
-	return "", nil
+	req := (*C.WebKitURISchemeRequest)(r.task)
+	method := C.webkit_uri_scheme_request_get_http_method(req)
+	return C.GoString(method), nil
 }
 
 func (r *request) Header() (http.Header, error) {
 	if r.header != nil {
 		return r.header, nil
 	}
-
+	req := (*C.WebKitURISchemeRequest)(r.task)
 	header := http.Header{}
-	// if cHeaders := C.URLSchemeTaskRequestHeadersJSON(r.task); cHeaders != nil {
-	// 	if headers := C.GoString(cHeaders); headers != "" {
-	// 		var h map[string]string
-	// 		if err := json.Unmarshal([]byte(headers), &h); err != nil {
-	// 			return nil, fmt.Errorf("unable to unmarshal request headers: %s", err)
-	// 		}
 
-	// 		for k, v := range h {
-	// 			header.Add(k, v)
-	// 		}
-	// 	}
-	// 	C.free(unsafe.Pointer(cHeaders))
-	// }
-	// r.header = header
+	hdrs := C.webkit_uri_scheme_request_get_http_headers(req)
+
+	var iter C.SoupMessageHeadersIter
+	C.soup_message_headers_iter_init(&iter, hdrs)
+
+	var name *C.char
+	var value *C.char
+
+	for C.soup_message_headers_iter_next(&iter, &name, &value) != 0 {
+		header.Add(C.GoString(name), C.GoString(value))
+	}
+
+	r.header = header
 	return header, nil
 }
 
@@ -74,19 +94,7 @@ func (r *request) Body() (io.ReadCloser, error) {
 	if r.body != nil {
 		return r.body, nil
 	}
-
-	//	var body unsafe.Pointer
-	//	var bodyLen C.int
-	// if C.URLSchemeTaskRequestBodyBytes(r.task, &body, &bodyLen) {
-	// 	if body != nil && bodyLen > 0 {
-	// 		r.body = io.NopCloser(bytes.NewReader(C.GoBytes(body, bodyLen)))
-	// 	} else {
-	// 		r.body = http.NoBody
-	// 	}
-	// } else if C.URLSchemeTaskRequestBodyStreamOpen(r.task) {
-	// 	r.body = &requestBodyStreamReader{task: r.task}
-	// }
-
+	r.body = &requestBodyStreamReader{task: r.task}
 	return r.body, nil
 }
 
@@ -108,6 +116,18 @@ type requestBodyStreamReader struct {
 
 // Read implements io.Reader
 func (r *requestBodyStreamReader) Read(p []byte) (n int, err error) {
+	chunkSize := C.ulong(1 * 1024 * 1024)
+	chunk := make([]byte, chunkSize)
+	pointer := unsafe.Pointer(&chunk[0])
+	strm := (*C.GInputStream)(r.task)
+	res := C.g_input_stream_read(
+		strm,
+		pointer,
+		chunkSize,
+		nil,
+		nil,
+	)
+	fmt.Println("res: ", res)
 	// var content unsafe.Pointer
 	// var contentLen int
 	// if p != nil {

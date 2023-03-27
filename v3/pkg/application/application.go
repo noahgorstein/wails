@@ -403,7 +403,8 @@ func (a *App) handleWindowMessage(event *windowMessage) {
 func (a *App) handleWebViewRequest(request *webViewAssetRequest) {
 	// Get window from window map
 	url, _ := request.URL()
-	a.info("Window: %d, Request: %s", request.windowId, url)
+	method, _ := request.Method()
+	a.info("Window: %d, Method: %s Request: %s", request.windowId, method, url)
 	a.assets.ServeWebViewRequest(request)
 }
 

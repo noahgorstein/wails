@@ -1,4 +1,5 @@
 //go:build darwin
+
 package application
 
 /*
@@ -9,7 +10,6 @@ package application
 */
 
 import "C"
-
 
 type macosWebviewWindow struct {
 	commonWebviewWindow
